@@ -6,7 +6,7 @@
 /*   By: rlabbaou <rlabbaou@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/28 15:19:50 by rlabbaou          #+#    #+#             */
-/*   Updated: 2026/03/31 18:47:44 by rlabbaou         ###   ########.fr       */
+/*   Updated: 2026/03/31 18:53:05 by rlabbaou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,13 @@ char    *get_next_line(int fd)
 {
     static char *stash = NULL;
     char    *buffer = NULL;
-    int     buffer_size = 6;
+   // int     buffer_size = 6;
     int     n_read = 1;
 	char	*temp = NULL;
 	if (fd < 0)
 		return (NULL);
 //  read and append
-    buffer = malloc(buffer_size + 1); 
+    buffer = malloc(BUFFER_SIZE + 1); 
 	if (!buffer)
         return (NULL);
 	if (!stash)
@@ -35,7 +35,7 @@ char    *get_next_line(int fd)
     }
 	while (n_read > 0) 
     {   
-		n_read = read(fd, buffer, buffer_size);
+		n_read = read(fd, buffer, BUFFER_SIZE);
 		if (n_read <= 0)
 			return(free(buffer), free(stash), NULL);
 		buffer[n_read] = '\0';
