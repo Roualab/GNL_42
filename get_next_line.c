@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/* ************************************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
@@ -6,7 +6,7 @@
 /*   By: rlabbaou <rlabbaou@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/28 15:19:50 by rlabbaou          #+#    #+#             */
-/*   Updated: 2026/03/31 17:08:05 by rlabbaou         ###   ########.fr       */
+/*   Updated: 2026/03/31 18:47:44 by rlabbaou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,15 @@ char    *get_next_line(int fd)
 	if (!stash)
 	{
 		stash = malloc(1);
+		if (!stash)
+			return(free(buffer), NULL);
 		stash[0] = '\0';
     }
 	while (n_read > 0) 
     {   
 		n_read = read(fd, buffer, buffer_size);
-		if (n_read < 0)
-			return(free(stash), NULL);
+		if (n_read <= 0)
+			return(free(buffer), free(stash), NULL);
 		buffer[n_read] = '\0';
 		temp = ft_strjoin(stash, buffer);
 		free(stash);
@@ -82,17 +84,13 @@ char    *get_next_line(int fd)
 int main()
 {
     int fd;
-	int i=0;
     char *line = NULL;
     fd = open("test.txt", O_RDONLY);
     if (fd < 0)
         return (printf("%s", "not found"));
-line = get_next_line(fd);
- // printf("%s", line);
-    while (i < 4)
+    while ((line = get_next_line(fd)) != NULL)
     {
         printf("%s", line);
-        i++;
     	 free(line);
 	}
     close(fd);
