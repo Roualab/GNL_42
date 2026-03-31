@@ -1,4 +1,4 @@
-/* ************************************************************************* */
+/* ************************************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
@@ -6,7 +6,7 @@
 /*   By: rlabbaou <rlabbaou@student.42berlin.d      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/28 15:19:50 by rlabbaou          #+#    #+#             */
-/*   Updated: 2026/03/31 18:53:05 by rlabbaou         ###   ########.fr       */
+/*   Updated: 2026/03/31 19:52:42 by rlabbaou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,10 @@ char    *get_next_line(int fd)
 	while (n_read > 0) 
     {   
 		n_read = read(fd, buffer, BUFFER_SIZE);
-		if (n_read <= 0)
+		if (n_read < 0)
 			return(free(buffer), free(stash), NULL);
+		if (n_read == 0)
+			break;
 		buffer[n_read] = '\0';
 		temp = ft_strjoin(stash, buffer);
 		free(stash);
@@ -47,6 +49,12 @@ char    *get_next_line(int fd)
 	}
 	free(buffer);
 	buffer = NULL;
+	if (!stash || stash[0] == '\0')
+	{
+		free(stash);
+		stash = NULL;
+		return (NULL);
+	}
 // extract one line
     char    *extracted =    NULL;
     char    *rest = NULL;
@@ -63,7 +71,6 @@ char    *get_next_line(int fd)
     if (!extracted)
         return(free(stash), NULL);
     ft_strlcpy(extracted, stash, i + 1);
-    //extracted[i] = '\0';
     pos = i;
     while (stash[i++])
         len++;
@@ -75,7 +82,6 @@ char    *get_next_line(int fd)
     free(stash);
 	stash = rest;
 	return (extracted);
-
 }
 
 
