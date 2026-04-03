@@ -13,16 +13,11 @@
 #include "get_next_line.h"
 #include <stdlib.h>
 
-char    *get_next_line(int fd) 
+static char *read_to_stash(int fd, char *stash)
 {
-    static char *stash = NULL;
-    char    *buffer = NULL;
-   // int     buffer_size = 6;
-    int     n_read = 1;
-	char	*temp = NULL;
-	if (fd < 0)
-		return (NULL);
-//  read and append
+    char    *buffer;
+    int     n_read;
+	char	*temp;
     buffer = malloc(BUFFER_SIZE + 1); 
 	if (!buffer)
         return (NULL);
@@ -33,36 +28,37 @@ char    *get_next_line(int fd)
 			return(free(buffer), NULL);
 		stash[0] = '\0';
     }
-	while (n_read > 0) 
+    n_read = 1;
+	while (n_read > 0 && !ft_strchr(stash, '\n')) 
     {   
 		n_read = read(fd, buffer, BUFFER_SIZE);
 		if (n_read < 0)
 			return(free(buffer), free(stash), NULL);
-		if (n_read == 0)
-			break;
 		buffer[n_read] = '\0';
 		temp = ft_strjoin(stash, buffer);
 		free(stash);
 		stash = temp;
-		if (ft_strchr(stash, '\n'))
-			break;
 	}
-	free(buffer);
-	buffer = NULL;
-	if (!stash || stash[0] == '\0')
-	{
-		free(stash);
-		stash = NULL;
-		return (NULL);
-	}
-// extract one line
-    char    *extracted =    NULL;
-    char    *rest = NULL;
-    size_t i = 0;
-    size_t pos = 0;
-    size_t len = 0;
-	char	*temp_pos;
-	
+    return (free (buffer), buffer = NULL, stash);
+}
+
+char    *get_next_line(int fd)
+{
+    static char *stash;
+    char    *extracted;
+    char    *rest;
+    size_t i;
+    size_t pos;
+    size_t len;
+    i = 0;
+    pos = 0;
+    len = 0;
+
+    if (fd < 0)
+        return (NULL);
+    stash = read_to_stash(fd, stash);
+    if (!stash || stash[0] == '\0')
+        return (free(stash), stash = NULL, NULL);	
     while (stash[i] && stash[i] != '\n')
         i++;
     if (stash[i])
@@ -77,11 +73,8 @@ char    *get_next_line(int fd)
     rest = malloc(len + 1);
     if (!rest)
         return(free(extracted), free(stash), NULL);
-    temp_pos = stash + pos;
-    ft_strlcpy(rest, temp_pos, len + 1);
-    free(stash);
-	stash = rest;
-	return (extracted);
+    ft_strlcpy(rest, stash + pos, len + 1);
+	return (free(stash), stash = rest, extracted);
 }
 
 
